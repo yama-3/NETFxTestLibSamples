@@ -106,6 +106,19 @@ namespace NSubstituteTests
             Assert.Equal(calculator.Add(1, 3), 50);
             Assert.Equal(calculator.Add(-7, 15), 100);
         }
+
+        [Fact]
+        public void class1_method1_positive()
+        {
+            var if1 = Substitute.For<Interface1>();
+            var if2 = Substitute.For<Interface2>();
+
+            var target = new Class1(if1, if2);
+            target.Method1(1);
+
+            if1.Received().Method1();
+            if2.DidNotReceive().Method1();
+        }
     }
 
     public class CommandRunner
@@ -148,5 +161,44 @@ namespace NSubstituteTests
         int Add(int val1, int val2);
         string Mode { get; set; }
         event EventHandler PoweringUp;
+    }
+
+    public class Class1
+    {
+        public Interface1 _if1;
+        public Interface2 _if2;
+
+        private Class1()
+        {
+        }
+
+
+        public Class1(Interface1 if1, Interface2 if2)
+        {
+            _if1 = if1;
+            _if2 = if2;
+        }
+
+        public void Method1(int arg1)
+        {
+            if (arg1 > 0)
+            {
+                _if1.Method1();
+            }
+            else
+            {
+                _if2.Method1();
+            }
+        }
+    }
+
+    public interface Interface1
+    {
+        int Method1();
+    }
+
+    public interface Interface2
+    {
+        int Method1();
     }
 }
