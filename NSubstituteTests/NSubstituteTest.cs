@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using NSubstitute;
 using Xunit;
+using Xunit.Extensions;
 
 namespace NSubstituteTests
 {
@@ -119,6 +122,50 @@ namespace NSubstituteTests
             if1.Received().Method1();
             if2.DidNotReceive().Method1();
         }
+
+        [Fact]
+        public void class_method2_exception()
+        {
+            var if1 = Substitute.For<Interface1>();
+            var if2 = Substitute.For<Interface2>();
+
+            var target = new Class1(if1, if2);
+
+            var e = Record.Exception(() => target.Method2());
+
+            Assert.IsType<ArgumentException>(e);
+        }
+
+        [Theory]
+        [InlineData("あいうえお", 10, false)]
+        [InlineData("かきくけこ", 11, true)]
+        [InlineData("さしすせそ", 12, true)]
+        public void class1_method1_negative(string val1, int val2, bool val3)
+        {
+            Assert.Equal("あいうえお", val1);
+            Assert.Equal(10, val2);
+            Assert.Equal(false, val3);
+        }
+
+        [Theory]
+        [MemberData("Prop1")]
+        public void class1_method1_a(string val1, int val2, bool val3)
+        {
+            Assert.Equal("あいうえお", val1);
+            Assert.Equal(10, val2);
+            Assert.Equal(false, val3);
+        }
+
+        public static IEnumerable<object[]> Prop1
+        {
+            get
+            {
+                yield return new object[] { "a", 1, true };
+                yield return new object[] { "b", 2, false };
+                yield return new object[] { "c", 3, true };
+            }
+        }
+
     }
 
     public class CommandRunner
@@ -189,6 +236,11 @@ namespace NSubstituteTests
             {
                 _if2.Method1();
             }
+        }
+
+        public void Method2()
+        {
+            throw new ArgumentException();
         }
     }
 
