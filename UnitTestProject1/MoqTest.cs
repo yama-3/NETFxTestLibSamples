@@ -74,6 +74,17 @@ namespace UnitTestProject1
             mock.Setup(foo => foo.Add(It.IsInRange<int>(0, 10, Range.Inclusive))).Returns(true);
             mock.Setup(foo => foo.DoSomething(It.IsRegex("[a-d]+", RegexOptions.IgnoreCase))).Returns(false);
         }
+
+        [TestMethod]
+        public void Test1()
+        {
+            var mock = new Mock<Bar>();
+            mock.Setup(_ => _.Method1()).Returns("b");
+            Assert.AreEqual("b", mock.Object.Method1());
+
+            var obj = new Bar();
+            Assert.AreEqual("a", obj.Method1());
+        }
     }
 
     internal interface IFoo
@@ -89,5 +100,9 @@ namespace UnitTestProject1
 
     class Bar
     {
+        public virtual string Method1()
+        {
+            return "a";
+        }
     }
 }
