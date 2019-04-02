@@ -15,29 +15,29 @@ namespace NSubstituteTests
             var calculator = Substitute.For<ICalculator>();
 
             calculator.Add(1, 2).Returns(3);
-            Assert.Equal(calculator.Add(1, 2), 3);
+            Assert.Equal(3, calculator.Add(1, 2));
 
             calculator.Received().Add(1, Arg.Any<int>());
             calculator.Received().Add(Arg.Any<int>(), 2);
             calculator.DidNotReceive().Add(2, 2);
 
             calculator.Mode.Returns("DEC");
-            Assert.Equal(calculator.Mode, "DEC");
+            Assert.Equal("DEC", calculator.Mode);
 
             calculator.Mode = "HEX";
-            Assert.Equal(calculator.Mode, "HEX");
+            Assert.Equal("HEX", calculator.Mode);
 
             calculator.Add(10, -5);
             calculator.Received().Add(10, Arg.Any<int>());
             calculator.Received().Add(10, Arg.Is<int>(_ => _ < 0));
 
             calculator.Add(Arg.Any<int>(), Arg.Any<int>()).Returns(x => (int)x[0] + (int)x[1]);
-            Assert.Equal(calculator.Add(5, 10), 15);
+            Assert.Equal(15, calculator.Add(5, 10));
 
             calculator.Mode.Returns("HEX", "DEC", "BIN");
-            Assert.Equal(calculator.Mode, "HEX");
-            Assert.Equal(calculator.Mode, "DEC");
-            Assert.Equal(calculator.Mode, "BIN");
+            Assert.Equal("HEX", calculator.Mode);
+            Assert.Equal("DEC", calculator.Mode);
+            Assert.Equal("BIN", calculator.Mode);
 
             bool eventWasRaised = false;
             calculator.PoweringUp += (sender, args) => eventWasRaised = true;
@@ -144,7 +144,7 @@ namespace NSubstituteTests
         {
             Assert.Equal("あいうえお", val1);
             Assert.Equal(10, val2);
-            Assert.Equal(false, val3);
+            Assert.False(val3);
         }
 
         [Theory]
@@ -153,7 +153,7 @@ namespace NSubstituteTests
         {
             Assert.Equal("あいうえお", val1);
             Assert.Equal(10, val2);
-            Assert.Equal(false, val3);
+            Assert.False(val3);
         }
 
         public static IEnumerable<object[]> Prop1
@@ -166,6 +166,24 @@ namespace NSubstituteTests
             }
         }
 
+        [Fact]
+        public void Test1()
+        {
+            var mock = Substitute.For<Hoge>();
+            mock.M1().Returns("b");
+            Assert.Equal("b", mock.M1());
+
+            var obj = new Hoge();
+            Assert.Equal("a", obj.M1());
+        }
+    }
+
+    public class Hoge
+    {
+        public virtual string M1()
+        {
+            return "a";
+        }
     }
 
     public class CommandRunner
